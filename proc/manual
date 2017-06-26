@@ -1,0 +1,159 @@
+서버관리자
+	1] 실행 버튼
+		< New >		: 단말 컴퓨터 관리 리스트에 추가
+		< Remove >		: 단말 컴퓨터 관리 리스트에서 제거
+		< Connect >		: 단말 컴퓨터에 연결
+		< Disconnect > 	: 단말 컴퓨터와 연결 종료
+		< Run >		: 스크립트 실행
+		< Stop >		: 스크립트 실행 중지
+		< Show >		: Undefined
+
+	2] Status
+		idle		: 연결 후 대기상태
+		working		: 스크립트 실행 중인 상태
+		dead		: 연결이 종료된 상태
+		zombie		: 연결이 종료되었으나 객체가 남아있는 상태로 < disconnect >
+				  로 초기화하면 된다.
+콘솔 터미널
+	Listening ip address 		: 연결할 단말 컴퓨터의 ip 주소
+	Listening Port			 : 연결할 단말 컴퓨터의 port 번호
+	Password			 : 보안암호
+	< Connect >			 : 접속
+	< Disconnect >		 : 연결종료
+	[ Command ]			 : 데이터 버퍼
+	< Mode >			 : 단말 컴퓨터의 pycro system 컨트롤 명령어 전송
+	< Commit > 			 : 데이터 버퍼 전송
+
+	Mode 명령어
+		- shutdown 		 : 단말기의 pycro system을 종료한다.
+		- quit		: pycro system을 유지하고 현재 네트워크 연결만 종료한다.
+		- run SCRIPT_NAME	: 해당 스크립트를 실행한다.
+		- stop		: 해당 스크립트를 중지한다.
+		- console		: 콘솔모드로 변경하여 commit 기능을 사용할 수 있게 한다.
+		- change password	: 비밀번호를 변경한다.(재연결시 변경)
+		- change port	 	: 포트번호를 변경한다.(재시작시 변경)
+		- send FILE_NAME 	: 파일을 전송한다.
+		- receive FILE_NAME 	: 파일을 단말기로부터 받는다.
+
+	Mouse Command
+		- 1 x y 		: move relatively mouse pointer (p+x, q+ y)
+		- 1 1 x y 		: move absolutely mouse pointer (x, y)
+
+스크립트 작성요령
+
+Syntax Structue :
+
+	1] Keyword Description
+
+	Keyword		Description
+	----------------------------------------------------------------------------
+	#namespace	다른 스크립트 파일을 현재 파일로 이름공간을 할당 및 로드
+	@begin		[필수] 스크립트 시작
+	@end		[필수] 스크립트 종료
+	@loop		무한 반복
+	@while		Statement가 True일 때만 반복
+	@endloop		반복문 closure
+	@if		조건문
+	@elseif		조건문(@if 다음에 출현)
+	@else		조건문(@if 다음에 출현)
+	@endif		조건문 closure
+	@var		전역 변수 선언
+	@ass		전역 변수 할당
+	@ass*		전역 변수를 다른 변수로부터 값 할당
+	@ass&		전역 변수 내장 함수 리턴값 할당
+	@del		전역 변수 선언 해제
+	@let		지역 변수 선언
+	@vass		지역 변수 할당
+	@vass*		지역 변수를 다른 변수로부터 값 할당
+	@vass&		지역 변수 내장 함수 리턴값 할당
+	@vdel		지역 변수 선언 해제
+	@pass		아무 것도 수행하지 않음
+	@mouse		마우스 조작
+	@exec		프로그램 실행
+	@jmp		선언된 라인번호로 점프
+	@exit		스크립트 종료
+	@input		키보드 입력
+	@console		콘솔모드로 변경
+	@msg		디버깅 메시지
+	@wait		시간 지연
+	@def		함수 선언
+	@ndef		파라미터함수 선언
+	@return		함수 결과 값 반환
+	@call		함수 호출
+	@alloc		함수 호출 및 결과값 할당
+	//		주석(Comment)
+	
+	
+	2] 스크립트 라인 문법
+	
+	Keyword Statement
+
+	모든 Keyword가 Statement를 가지는 것이 아니며 Statement를 가지지 않는 Keyword에
+	대해서는 Statement에 None이라고 표시한다.
+	
+	Keyword		Required Statement		Desp
+	----------------------------------------------------------------------------
+	#namespace 	SCRIPT_PATH_TO_BE_INCLUDED
+	@begin		None
+	@end		None
+	@loop		None
+	@while		Boolean Statement
+	@endloop		None
+	@if		Boolean Statement
+	@elseif		Boolean Statement
+	@else		None
+	@endif		None
+	@var		variable_type variable_name = constant,string
+	@ass		variable_type variable_name = constant,string
+	@ass*		variable_type variable_name = other variable
+	@ass&		variable_type variable_name = function_statement (e.g. time())
+	@del		variable_name
+	@let		variable_type variable_name = constant,string
+	@vass		variable_type variable_name = constant,string
+	@vass*		variable_type variable_name = other variable
+	@vass&		variable_type variable_name = function_statement (e.g. time())
+	@vdel		variable_name
+	@pass		None
+	@mouse		command_No [int int]		[] is not essential
+	@exec		program_path_to_execute
+	@jmp		int
+	@exit		None
+	@input		string xor variable
+	@console		None
+	@msg		string
+	@wait		float
+	@def		function_name
+	@ndef		function_name
+	@return		void xor variable_type variable
+	@call		function_name
+	@alloc		variable = function_name
+	//		text			comment per line
+
+	1) #namespace 문은 반드시 @begin 문 이전에 위치하여야 한다.
+	2) 모든 .tl 파일은  #namespace 구문 이후로 @begin으로 시작해서 @end로 끝나야한다.
+	3) // 는 한 줄 단위 주석으로서 어디에 위치하든 상관없다.
+	4) @loop와 @while 구문의 끝에는 반드시 @endloop 구문이 있어야한다.
+	5) @if, @elseif, @else 구문의 끝에는 각각 @endif 구문이 있어야한다.
+	6) 조건문, 반복문은 중복(nested)할 수 있다.
+	7) 함수는 중복(override)될 수 없다. 같은 이름을 가진 경우 가장 나중에 등록된 함수만 
+	   사용된다.
+	8) @vass 문은 main에 저장되지 않고 함수를 나가자마자 메모리 체인에서 제거된다.
+	   함수 밖에서 결과값을 main 영역 변수에 저장하려면 return 문을 통해서 값을 반환하면
+	   된다. 단 return void는 아무 값도 반환하지 않는다.
+	9) jmp 문에 들어가는 정수타입 숫자는 문의 시작 라인번호와 일치해야 한다.
+	10) mouse 문
+		Action		Command_No	DESP
+		MOVE 		1		마우스 포인터 움직임(Relative)
+		SCROLL		2		마우스 스크롤
+		LEFT_SHRT 		3		왼클릭
+		RGHT_SHRT		4 		우클릭
+		LEFT_LONG		5		왼클릭 유지(Drag)
+		LEFT_LONGx		6		왼클릭 멈춤(Drag)
+		LEFT_DBLE		7		더블클릭(왼쪽)
+		RGHT_DBLE		8		더블클릭(우측)
+
+	
+	3] Messenger 변수
+		Messenger 변수는 선언 및 삭제 불가 변수로 함수의 값을 main_body에 전달하는
+		역할을 수행하는 내부 변수이다.
+
